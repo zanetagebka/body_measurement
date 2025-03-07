@@ -75,3 +75,9 @@ def switch_language(request):
         return response
     return redirect('measurement_list')
 
+@login_required
+def user_profile(request):
+    return render(request, 'measurements/profile.html', {
+        'user': request.user
+    })
+

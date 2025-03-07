@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
-from .models import Measurement, User
+from .models import Measurement
 
 class MeasurementForm(forms.ModelForm):
     class Meta:
@@ -12,9 +13,9 @@ class MeasurementForm(forms.ModelForm):
         }
 
 class LoginForm(AuthenticationForm):
-    username = forms.EmailField(
-        label=_("Email"),
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': _('Enter your email')})
+    username = forms.CharField(
+        label=_("Username"),
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Enter your username')})
     )
     password = forms.CharField(
         label=_("Password"),
@@ -22,6 +23,10 @@ class LoginForm(AuthenticationForm):
     )
 
 class RegisterForm(UserCreationForm):
+    username = forms.CharField(
+        label=_("Username"),
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Enter your username')})
+    )
     email = forms.EmailField(
         label=_("Email"),
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': _('Enter your email')})
@@ -37,4 +42,4 @@ class RegisterForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('email', 'password1', 'password2')
+        fields = ('username', 'email', 'password1', 'password2')

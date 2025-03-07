@@ -1,0 +1,27 @@
+{% extends 'measurements/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Profile" %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">{% trans "User Profile" %}</h2>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>{% trans "Username" %}:</strong> {{ user.username }}
+                </div>
+                <div class="mb-3">
+                    <strong>{% trans "Email" %}:</strong> {{ user.email }}
+                </div>
+                <div class="mb-3">
+                    <strong>{% trans "Date joined" %}:</strong> {{ user.date_joined|date:"d.m.Y" }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
