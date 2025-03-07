@@ -167,3 +167,48 @@ msgstr "Potwierdź hasło"
 
 msgid "Hello"
 msgstr "Witaj"
+
+msgid "Reset Password"
+msgstr "Zresetuj hasło"
+
+msgid "Enter your email address below, and we'll email instructions for setting a new password."
+msgstr "Wprowadź swój adres email poniżej, a wyślemy instrukcje dotyczące ustawienia nowego hasła."
+
+msgid "Send Password Reset Email"
+msgstr "Wyślij email z resetowaniem hasła"
+
+msgid "Password Reset Sent"
+msgstr "Email z resetowaniem hasła został wysłany"
+
+msgid "We've emailed you instructions for setting your password. If you don't receive an email, please make sure you've entered the address you registered with."
+msgstr "Wysłaliśmy instrukcje dotyczące ustawienia hasła na Twój adres email. Jeśli nie otrzymasz wiadomości, upewnij się, że podałeś adres, którego użyłeś podczas rejestracji."
+
+msgid "Return to Login"
+msgstr "Wróć do logowania"
+
+msgid "Set New Password"
+msgstr "Ustaw nowe hasło"
+
+msgid "New Password"
+msgstr "Nowe hasło"
+
+msgid "Confirm New Password"
+msgstr "Potwierdź nowe hasło"
+
+msgid "Change Password"
+msgstr "Zmień hasło"
+
+msgid "The password reset link was invalid, possibly because it has already been used. Please request a new password reset."
+msgstr "Link do resetowania hasła jest nieprawidłowy, prawdopodobnie został już użyty. Poproś o nowy link do resetowania hasła."
+
+msgid "Request New Reset Link"
+msgstr "Poproś o nowy link"
+
+msgid "Password Reset Complete"
+msgstr "Resetowanie hasła zakończone"
+
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr "Twoje hasło zostało ustawione. Możesz się teraz zalogować."
+
+msgid "Forgot Password?"
+msgstr "Zapomniałeś hasła?"
