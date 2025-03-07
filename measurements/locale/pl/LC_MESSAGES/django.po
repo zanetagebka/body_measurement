@@ -1,0 +1,127 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-07 19:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: pl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && "
+"(n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && "
+"n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+#: templates/measurements/add.html:5 templates/measurements/add.html:12
+#: templates/measurements/list.html:82 translation_strings.py:5
+#: translation_strings.py:29
+msgid "Dodaj nowy pomiar"
+msgstr "Dodaj nowy pomiar"
+
+#: templates/measurements/add.html:13 translation_strings.py:7
+msgid "Pola oznaczone * są wymagane"
+msgstr "Pola oznaczone * są wymagane"
+
+#: templates/measurements/add.html:39 translation_strings.py:25
+msgid "Zapisz"
+msgstr "Zapisz"
+
+#: templates/measurements/add.html:43 translation_strings.py:28
+msgid "Wróć do listy"
+msgstr "Wróć do listy"
+
+#: templates/measurements/list.html:5 templates/measurements/list.html:13
+#: translation_strings.py:4
+msgid "Twoje pomiary"
+msgstr "Twoje pomiary"
+
+#: templates/measurements/list.html:19 translation_strings.py:8
+msgid "Wykres pomiarów"
+msgstr "Wykres pomiarów"
+
+#: templates/measurements/list.html:21 templates/measurements/list.html:41
+#: templates/measurements/list.html:125 translation_strings.py:12
+msgid "Waga"
+msgstr "Waga"
+
+#: templates/measurements/list.html:22 templates/measurements/list.html:42
+#: templates/measurements/list.html:126 translation_strings.py:13
+msgid "Talia"
+msgstr "Talia"
+
+#: templates/measurements/list.html:23 templates/measurements/list.html:43
+#: templates/measurements/list.html:127 translation_strings.py:14
+msgid "Biodra"
+msgstr "Biodra"
+
+#: templates/measurements/list.html:24 templates/measurements/list.html:128
+#: translation_strings.py:15
+msgid "Klatka piersiowa"
+msgstr "Klatka piersiowa"
+
+#: templates/measurements/list.html:25 templates/measurements/list.html:45
+#: templates/measurements/list.html:129 translation_strings.py:16
+msgid "Udo"
+msgstr "Udo"
+
+#: templates/measurements/list.html:26 templates/measurements/list.html:46
+#: templates/measurements/list.html:130 translation_strings.py:17
+msgid "Łydka"
+msgstr "Łydka"
+
+#: templates/measurements/list.html:27 templates/measurements/list.html:131
+#: translation_strings.py:18
+msgid "Przedramię"
+msgstr "Przedramię"
+
+#: templates/measurements/list.html:40 translation_strings.py:11
+msgid "Data"
+msgstr "Data"
+
+#: templates/measurements/list.html:44
+msgid "Klatka"
+msgstr "Klatka"
+
+#: templates/measurements/list.html:47
+msgid "Ramię"
+msgstr "Ramię"
+
+#: templates/measurements/list.html:48
+msgid "Akcje"
+msgstr "Akcje"
+
+#: templates/measurements/list.html:65 templates/measurements/list.html:112
+#: translation_strings.py:26
+msgid "Usuń"
+msgstr "Usuń"
+
+#: templates/measurements/list.html:76 translation_strings.py:6
+msgid "Brak zapisanych pomiarów"
+msgstr "Brak zapisanych pomiarów"
+
+#: templates/measurements/list.html:99 translation_strings.py:32
+msgid "Usuń pomiar"
+msgstr "Usuń pomiar"
+
+#: templates/measurements/list.html:103 translation_strings.py:33
+msgid "Czy na pewno chcesz usunąć ten pomiar? Tej operacji nie można cofnąć."
+msgstr "Czy na pewno chcesz usunąć ten pomiar? Tej operacji nie można cofnąć."
+
+#: templates/measurements/list.html:116 translation_strings.py:27
+msgid "Anuluj"
+msgstr "Anuluj"
+
+#: templates/measurements/list.html:132 translation_strings.py:21
+msgid "kg"
+msgstr "kg"
+
+#: templates/measurements/list.html:133 translation_strings.py:22
+msgid "cm"
+msgstr "cm"

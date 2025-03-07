@@ -1,0 +1,265 @@
+{% extends "measurements/base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Twoje pomiary" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chart-container {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .table-container {
+        background: white;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    {% if measurements %}
+        <!-- Chart Section -->
+        <div class="chart-container">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h5 mb-0">{% translate "Wykres pomiarów" %}</h2>
+                <select id="measurementType" onchange="updateChart()" class="form-select form-select-sm" style="width: auto;">
+                    <option value="weight">{% translate "Waga" %}</option>
+                    <option value="waist">{% translate "Talia" %}</option>
+                    <option value="hips">{% translate "Biodra" %}</option>
+                    <option value="chest">{% translate "Klatka piersiowa" %}</option>
+                    <option value="thigh">{% translate "Udo" %}</option>
+                    <option value="calf">{% translate "Łydka" %}</option>
+                    <option value="forearm">{% translate "Przedramię" %}</option>
+                </select>
+            </div>
+            <div style="height: 400px;">
+                <canvas id="measurementsChart"></canvas>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>{% translate "Data" %}</th>
+                            <th>{% translate "Waga" %}</th>
+                            <th>{% translate "Talia" %}</th>
+                            <th>{% translate "Biodra" %}</th>
+                            <th>{% translate "Klatka" %}</th>
+                            <th>{% translate "Udo" %}</th>
+                            <th>{% translate "Łydka" %}</th>
+                            <th>{% translate "Ramię" %}</th>
+                            <th class="text-end">{% translate "Akcje" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for measurement in measurements reversed %}
+                            <tr>
+                                <td>{{ measurement.date|date:"d.m.Y" }}</td>
+                                <td>{{ measurement.weight|default:"-" }}</td>
+                                <td>{{ measurement.waist }}</td>
+                                <td>{{ measurement.hips }}</td>
+                                <td>{{ measurement.chest }}</td>
+                                <td>{{ measurement.thigh }}</td>
+                                <td>{{ measurement.calf }}</td>
+                                <td>{{ measurement.forearm }}</td>
+                                <td class="text-end">
+                                    <button onclick="showDeleteModal({{ measurement.id }})" 
+                                            class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <p class="text-muted mb-4">{% translate "Brak zapisanych pomiarów" %}</p>
+            <a href="{% url 'measurement_add' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>{% translate "Dodaj nowy pomiar" %}
+            </a>
+        </div>
+    {% endif %}
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% translate "Usuń pomiar" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>{% translate "Czy na pewno chcesz usunąć ten pomiar? Tej operacji nie można cofnąć." %}</p>
+                </div>
+                <div class="modal-footer">
+                    <form id="deleteForm" method="POST">
+                        {% csrf_token %}
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            {% translate "Anuluj" %}
+                        </button>
+                        <button type="submit" class="btn btn-danger">
+                            {% translate "Usuń" %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+{% if measurements %}
+<script>
+    const translations = {
+        weight: "{% translate 'Waga' %}",
+        waist: "{% translate 'Talia' %}",
+        hips: "{% translate 'Biodra' %}",
+        chest: "{% translate 'Klatka piersiowa' %}",
+        thigh: "{% translate 'Udo' %}",
+        calf: "{% translate 'Łydka' %}",
+        forearm: "{% translate 'Przedramię' %}",
+        kg: "{% translate 'kg' %}",
+        cm: "{% translate 'cm' %}"
+    };
+
+    // Create arrays and sort by date
+    const rawData = [
+        {% for m in measurements reversed %}
+        {
+            date: new Date("{{ m.date|date:'Y-m-d' }}"),
+            displayDate: "{{ m.date|date:'d.m.Y' }}",
+            weight: {% if m.weight != None %}Number({{ m.weight|stringformat:"f" }}){% else %}null{% endif %},
+            waist: {% if m.waist != None %}Number({{ m.waist|stringformat:"f" }}){% else %}null{% endif %},
+            hips: {% if m.hips != None %}Number({{ m.hips|stringformat:"f" }}){% else %}null{% endif %},
+            chest: {% if m.chest != None %}Number({{ m.chest|stringformat:"f" }}){% else %}null{% endif %},
+            thigh: {% if m.thigh != None %}Number({{ m.thigh|stringformat:"f" }}){% else %}null{% endif %},
+            calf: {% if m.calf != None %}Number({{ m.calf|stringformat:"f" }}){% else %}null{% endif %},
+            forearm: {% if m.forearm != None %}Number({{ m.forearm|stringformat:"f" }}){% else %}null{% endif %}
+        },
+        {% endfor %}
+    ].sort((a, b) => b.date - a.date);  // Sort by date descending for table
+
+    // Create a copy of rawData and sort it ascending for the chart
+    const chartData = [...rawData].sort((a, b) => a.date - b.date);
+
+    const measurementsData = {
+        dates: chartData.map(m => m.displayDate),
+        weight: chartData.map(m => m.weight),
+        waist: chartData.map(m => m.waist),
+        hips: chartData.map(m => m.hips),
+        chest: chartData.map(m => m.chest),
+        thigh: chartData.map(m => m.thigh),
+        calf: chartData.map(m => m.calf),
+        forearm: chartData.map(m => m.forearm)
+    };
+
+    let chart;
+
+    function createChart(type) {
+        const ctx = document.getElementById('measurementsChart').getContext('2d');
+        
+        // Debug logging
+        console.log('Creating chart for type:', type);
+        console.log('Chart data:', chartData);
+        console.log('Processed data:', measurementsData[type]);
+        console.log('Dates:', measurementsData.dates);
+        
+        if (chart) {
+            chart.destroy();
+        }
+
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: measurementsData.dates,
+                datasets: [{
+                    label: translations[type] + (type === 'weight' ? ` (${translations.kg})` : ` (${translations.cm})`),
+                    data: measurementsData[type],
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    tension: 0.1,
+                    fill: true,
+                    spanGaps: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let value = context.raw;
+                                if (value === null) return 'No data';
+                                return value.toFixed(2) + (type === 'weight' ? ` ${translations.kg}` : ` ${translations.cm}`);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: '{% translate "Data" %}'
+                        }
+                    },
+                    y: {
+                        display: true,
+                        beginAtZero: false,
+                        min: function(context) {
+                            const values = context.chart.data.datasets[0].data.filter(v => v !== null);
+                            return Math.floor(Math.min(...values) - 1);
+                        },
+                        max: function(context) {
+                            const values = context.chart.data.datasets[0].data.filter(v => v !== null);
+                            return Math.ceil(Math.max(...values) + 1);
+                        },
+                        title: {
+                            display: true,
+                            text: type === 'weight' ? translations.kg : translations.cm
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value.toFixed(2) + (type === 'weight' ? ` ${translations.kg}` : ` ${translations.cm}`);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function updateChart() {
+        const type = document.getElementById('measurementType').value;
+        createChart(type);
+    }
+
+    // Initialize chart after the page is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        createChart('weight');
+    });
+
+    // Delete modal functionality
+    function showDeleteModal(measurementId) {
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        const form = document.getElementById('deleteForm');
+        form.action = `/measurements/delete/${measurementId}/`;
+        modal.show();
+    }
+</script>
+{% endif %}
+{% endblock %}

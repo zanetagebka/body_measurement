@@ -1,0 +1,123 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} - Body Measurements</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .content {
+            flex: 1;
+            padding: 20px 0;
+        }
+        .navbar-brand {
+            font-weight: 600;
+        }
+        .nav-link.active {
+            font-weight: 500;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="bi bi-clipboard2-pulse me-2"></i>Body Measurements
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                {% if user.is_authenticated %}
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'measurement_list' %}active{% endif %}" 
+                           href="{% url 'measurement_list' %}">
+                            <i class="bi bi-list-ul me-1"></i>{% trans "Twoje pomiary" %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'measurement_add' %}active{% endif %}" 
+                           href="{% url 'measurement_add' %}">
+                            <i class="bi bi-plus-circle me-1"></i>{% trans "Dodaj nowy pomiar" %}
+                        </a>
+                    </li>
+                </ul>
+                {% endif %}
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <span class="nav-link">
+                                <i class="bi bi-person me-1"></i>{{ user.email }}
+                            </span>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" 
+                               href="{% url 'login' %}">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>{% trans "Login" %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'register' %}active{% endif %}" 
+                               href="{% url 'register' %}">
+                                <i class="bi bi-person-plus me-1"></i>{% trans "Register" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-globe me-1"></i>
+                            {% get_current_language as CURRENT_LANGUAGE %}
+                            {% if CURRENT_LANGUAGE == 'en' %}
+                                English
+                            {% else %}
+                                Polski
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item {% if CURRENT_LANGUAGE == 'en' %}active{% endif %}" 
+                                   href="{% url 'switch_language' %}?lang=en">
+                                    English
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {% if CURRENT_LANGUAGE == 'pl' %}active{% endif %}" 
+                                   href="{% url 'switch_language' %}?lang=pl">
+                                    Polski
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">
+                                <i class="bi bi-box-arrow-right me-1"></i>{% trans "Logout" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 
