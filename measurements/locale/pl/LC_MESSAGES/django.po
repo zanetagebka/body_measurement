@@ -125,3 +125,42 @@ msgstr "kg"
 #: templates/measurements/list.html:133 translation_strings.py:22
 msgid "cm"
 msgstr "cm"
+
+msgid "Register"
+msgstr "Zarejestruj się"
+
+msgid "Create Account"
+msgstr "Utwórz konto"
+
+msgid "Please correct the errors below."
+msgstr "Proszę poprawić poniższe błędy."
+
+msgid "Username"
+msgstr "Nazwa użytkownika"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Password"
+msgstr "Hasło"
+
+msgid "Confirm Password"
+msgstr "Potwierdź hasło"
+
+msgid "Already have an account?"
+msgstr "Masz już konto?"
+
+msgid "Login"
+msgstr "Zaloguj się"
+
+msgid "Enter your username"
+msgstr "Wprowadź nazwę użytkownika"
+
+msgid "Enter your email"
+msgstr "Wprowadź adres email"
+
+msgid "Enter your password"
+msgstr "Wprowadź hasło"
+
+msgid "Confirm your password"
+msgstr "Potwierdź hasło"
