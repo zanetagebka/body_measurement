@@ -9,7 +9,14 @@ class MeasurementForm(forms.ModelForm):
         model = Measurement
         fields = ['date', 'weight', 'waist', 'hips', 'chest', 'thigh', 'calf', 'forearm']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'})
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'weight': forms.NumberInput(attrs={'placeholder': _('Waga')}),
+            'waist': forms.NumberInput(attrs={'placeholder': _('Talia')}),
+            'hips': forms.NumberInput(attrs={'placeholder': _('Biodra')}),
+            'chest': forms.NumberInput(attrs={'placeholder': _('Klatka piersiowa')}),
+            'thigh': forms.NumberInput(attrs={'placeholder': _('Udo')}),
+            'calf': forms.NumberInput(attrs={'placeholder': _('Łydka')}),
+            'forearm': forms.NumberInput(attrs={'placeholder': _('Przedramię')}),
         }
 
 class LoginForm(AuthenticationForm):
