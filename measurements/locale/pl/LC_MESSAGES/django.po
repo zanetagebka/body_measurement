@@ -164,3 +164,6 @@ msgstr "Wprowadź hasło"
 
 msgid "Confirm your password"
 msgstr "Potwierdź hasło"
+
+msgid "Hello"
+msgstr "Witaj"
