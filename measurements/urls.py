@@ -13,6 +13,7 @@ urlpatterns = [
     path('measurements/add/', views.measurement_add, name='measurement_add'),
     path('measurements/delete/<int:pk>/', views.measurement_delete, name='measurement_delete'),
     path('measurements/export/csv/', views.export_measurements_csv, name='export_measurements_csv'),
+    path('measurements/import/', views.import_measurements, name='import_measurements'),
     path('login/', views.login_view, name='login'),
     path('register/', views.register_view, name='register'),
     path('logout/', views.logout_view, name='logout'),

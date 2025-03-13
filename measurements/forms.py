@@ -2,22 +2,44 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
+from django.forms import modelformset_factory
 from .models import Measurement
 
 class MeasurementForm(forms.ModelForm):
+    date = forms.DateField(
+        widget=forms.DateInput(
+            attrs={
+                'type': 'date',
+                'class': 'form-control',
+                'required': True
+            },
+            format='%Y-%m-%d'
+        )
+    )
+    
     class Meta:
         model = Measurement
         fields = ['date', 'weight', 'waist', 'hips', 'chest', 'thigh', 'calf', 'forearm']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'}),
-            'weight': forms.NumberInput(attrs={'placeholder': _('Waga')}),
-            'waist': forms.NumberInput(attrs={'placeholder': _('Talia')}),
-            'hips': forms.NumberInput(attrs={'placeholder': _('Biodra')}),
-            'chest': forms.NumberInput(attrs={'placeholder': _('Klatka piersiowa')}),
-            'thigh': forms.NumberInput(attrs={'placeholder': _('Udo')}),
-            'calf': forms.NumberInput(attrs={'placeholder': _('Łydka')}),
-            'forearm': forms.NumberInput(attrs={'placeholder': _('Przedramię')}),
+            'weight': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),
+            'waist': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),
+            'hips': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),
+            'chest': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),
+            'thigh': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),
+            'calf': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),
+            'forearm': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),
         }
+
+# Create a formset for handling multiple measurements
+MeasurementFormSet = modelformset_factory(
+    Measurement,
+    form=MeasurementForm,
+    extra=0,
+    min_num=1,
+    validate_min=True,
+    can_delete=False,
+    fields=['date', 'weight', 'waist', 'hips', 'chest', 'thigh', 'calf', 'forearm']
+)
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(

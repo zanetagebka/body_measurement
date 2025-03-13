@@ -28,9 +28,14 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div class="d-flex align-items-center gap-3">
                     <h2 class="h5 mb-0">{% translate "Wykres pomiarów" %}</h2>
-                    <a href="{% url 'export_measurements_csv' %}" class="btn btn-sm btn-outline-secondary">
-                        <i class="bi bi-download me-1"></i>{% translate "Eksportuj CSV" %}
-                    </a>
+                    <div class="btn-group">
+                        <a href="{% url 'export_measurements_csv' %}" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-download me-1"></i>{% translate "Eksportuj CSV" %}
+                        </a>
+                        <a href="{% url 'import_measurements' %}" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-upload me-1"></i>{% translate "Importuj CSV" %}
+                        </a>
+                    </div>
                 </div>
                 <select id="measurementType" onchange="updateChart()" class="form-select form-select-sm" style="width: auto;">
                     <option value="weight">{% translate "Waga" %}</option>
