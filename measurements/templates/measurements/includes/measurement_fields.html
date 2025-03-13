@@ -1,0 +1,32 @@
+{% load i18n %}
+
+<table class="table table-sm">
+    <tr>
+        <th>{% trans "Weight" %}</th>
+        <td>{{ measurement.weight|default:"-" }}</td>
+    </tr>
+    <tr>
+        <th>{% trans "Waist" %}</th>
+        <td>{{ measurement.waist|default:"-" }}</td>
+    </tr>
+    <tr>
+        <th>{% trans "Hips" %}</th>
+        <td>{{ measurement.hips|default:"-" }}</td>
+    </tr>
+    <tr>
+        <th>{% trans "Chest" %}</th>
+        <td>{{ measurement.chest|default:"-" }}</td>
+    </tr>
+    <tr>
+        <th>{% trans "Thigh" %}</th>
+        <td>{{ measurement.thigh|default:"-" }}</td>
+    </tr>
+    <tr>
+        <th>{% trans "Calf" %}</th>
+        <td>{{ measurement.calf|default:"-" }}</td>
+    </tr>
+    <tr>
+        <th>{% trans "Forearm" %}</th>
+        <td>{{ measurement.forearm|default:"-" }}</td>
+    </tr>
+</table> 

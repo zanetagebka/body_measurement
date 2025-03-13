@@ -14,36 +14,9 @@
                     <small class="text-muted">{{ existing.date }}</small>
                 </div>
                 <div class="card-body">
-                    <table class="table table-sm">
-                        <tr>
-                            <th>{% trans "Weight" %}</th>
-                            <td>{{ existing.weight }}</td>
-                        </tr>
-                        <tr>
-                            <th>{% trans "Waist" %}</th>
-                            <td>{{ existing.waist }}</td>
-                        </tr>
-                        <tr>
-                            <th>{% trans "Hips" %}</th>
-                            <td>{{ existing.hips }}</td>
-                        </tr>
-                        <tr>
-                            <th>{% trans "Chest" %}</th>
-                            <td>{{ existing.chest }}</td>
-                        </tr>
-                        <tr>
-                            <th>{% trans "Thigh" %}</th>
-                            <td>{{ existing.thigh }}</td>
-                        </tr>
-                        <tr>
-                            <th>{% trans "Calf" %}</th>
-                            <td>{{ existing.calf }}</td>
-                        </tr>
-                        <tr>
-                            <th>{% trans "Forearm" %}</th>
-                            <td>{{ existing.forearm }}</td>
-                        </tr>
-                    </table>
+                    {% with measurement=existing %}
+                        {% include "measurements/includes/measurement_fields.html" %}
+                    {% endwith %}
                 </div>
             </div>
         </div>
@@ -54,36 +27,9 @@
                     <small class="text-muted">{{ new.date }}</small>
                 </div>
                 <div class="card-body">
-                    <table class="table table-sm">
-                        <tr>
-                            <th>{% trans "Weight" %}</th>
-                            <td>{{ new.weight }}</td>
-                        </tr>
-                        <tr>
-                            <th>{% trans "Waist" %}</th>
-                            <td>{{ new.waist }}</td>
-                        </tr>
-                        <tr>
-                            <th>{% trans "Hips" %}</th>
-                            <td>{{ new.hips }}</td>
-                        </tr>
-                        <tr>
-                            <th>{% trans "Chest" %}</th>
-                            <td>{{ new.chest }}</td>
-                        </tr>
-                        <tr>
-                            <th>{% trans "Thigh" %}</th>
-                            <td>{{ new.thigh }}</td>
-                        </tr>
-                        <tr>
-                            <th>{% trans "Calf" %}</th>
-                            <td>{{ new.calf }}</td>
-                        </tr>
-                        <tr>
-                            <th>{% trans "Forearm" %}</th>
-                            <td>{{ new.forearm }}</td>
-                        </tr>
-                    </table>
+                    {% with measurement=new %}
+                        {% include "measurements/includes/measurement_fields.html" %}
+                    {% endwith %}
                 </div>
             </div>
         </div>

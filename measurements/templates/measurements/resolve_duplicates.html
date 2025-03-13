@@ -1,0 +1,82 @@
+{% extends 'measurements/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{% trans "Resolve Duplicate Measurements" %}</h2>
+    <p class="text-muted">{% trans "Some measurements in your import have dates that already exist in the database. Please choose which measurements to keep for each date." %}</p>
+
+    <form method="post" action="{% url 'import_measurements' %}">
+        {% csrf_token %}
+        <input type="hidden" name="resolve_duplicates" value="1">
+        
+        {% for date, measurements in duplicate_dates.items %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">{% trans "Date" %}: {{ measurements.existing.date }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>{% trans "Existing Measurement" %}</h6>
+                        <div class="table-responsive">
+                            {% with measurement=measurements.existing %}
+                                {% include "measurements/includes/measurement_fields.html" %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>{% trans "New Measurement" %}</h6>
+                        <div class="table-responsive">
+                            {% with measurement=measurements.new %}
+                                {% include "measurements/includes/measurement_fields.html" %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label>{% trans "Choose which measurement to keep for" %} {{ measurements.existing.date }}:</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" 
+                                       name="choice_{{ date }}" 
+                                       value="keep" 
+                                       id="keep_{{ date }}"
+                                       checked>
+                                <label class="form-check-label" for="keep_{{ date }}">
+                                    {% trans "Keep existing measurement" %}
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" 
+                                       name="choice_{{ date }}" 
+                                       value="update" 
+                                       id="update_{{ date }}">
+                                <label class="form-check-label" for="update_{{ date }}">
+                                    {% trans "Use new measurement" %}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% for field, value in measurements.new.items %}
+                    <input type="hidden" 
+                           name="new_{{ field }}_{{ date }}" 
+                           value="{{ value }}">
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'measurement_list' %}" class="btn btn-secondary">
+                {% trans "Cancel" %}
+            </a>
+            <button type="submit" class="btn btn-primary">
+                {% trans "Continue Import" %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %} 

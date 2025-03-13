@@ -28,65 +28,49 @@ def measurement_add(request):
         form = MeasurementForm(request.POST)
         if form.is_valid():
             date = form.cleaned_data['date']
-            
-            # Check for existing measurement on this date
-            existing_measurement = Measurement.objects.filter(
-                user=request.user,
-                date=date
-            ).first()
+            existing_measurement = Measurement.objects.filter(user=request.user, date=date).first()
             
             if existing_measurement and 'confirm_override' not in request.POST:
-                # Store form data in session
                 request.session['pending_measurement'] = {
                     'date': date.strftime('%Y-%m-%d'),
-                    'weight': str(form.cleaned_data['weight']) if form.cleaned_data['weight'] else '',
-                    'waist': str(form.cleaned_data['waist']) if form.cleaned_data['waist'] else '',
-                    'hips': str(form.cleaned_data['hips']) if form.cleaned_data['hips'] else '',
-                    'chest': str(form.cleaned_data['chest']) if form.cleaned_data['chest'] else '',
-                    'thigh': str(form.cleaned_data['thigh']) if form.cleaned_data['thigh'] else '',
-                    'calf': str(form.cleaned_data['calf']) if form.cleaned_data['calf'] else '',
-                    'forearm': str(form.cleaned_data['forearm']) if form.cleaned_data['forearm'] else '',
+                    'weight': str(form.cleaned_data['weight'] or ''),
+                    'waist': str(form.cleaned_data['waist'] or ''),
+                    'hips': str(form.cleaned_data['hips'] or ''),
+                    'chest': str(form.cleaned_data['chest'] or ''),
+                    'thigh': str(form.cleaned_data['thigh'] or ''),
+                    'calf': str(form.cleaned_data['calf'] or ''),
+                    'forearm': str(form.cleaned_data['forearm'] or ''),
                 }
                 
-                # Show confirmation page
                 return render(request, 'measurements/confirm_override.html', {
                     'existing': {
                         'date': existing_measurement.date,
-                        'weight': str(existing_measurement.weight) if existing_measurement.weight else '',
-                        'waist': str(existing_measurement.waist) if existing_measurement.waist else '',
-                        'hips': str(existing_measurement.hips) if existing_measurement.hips else '',
-                        'chest': str(existing_measurement.chest) if existing_measurement.chest else '',
-                        'thigh': str(existing_measurement.thigh) if existing_measurement.thigh else '',
-                        'calf': str(existing_measurement.calf) if existing_measurement.calf else '',
-                        'forearm': str(existing_measurement.forearm) if existing_measurement.forearm else '',
+                        'weight': str(existing_measurement.weight or ''),
+                        'waist': str(existing_measurement.waist or ''),
+                        'hips': str(existing_measurement.hips or ''),
+                        'chest': str(existing_measurement.chest or ''),
+                        'thigh': str(existing_measurement.thigh or ''),
+                        'calf': str(existing_measurement.calf or ''),
+                        'forearm': str(existing_measurement.forearm or ''),
                     },
                     'new': request.session['pending_measurement']
                 })
             
             if 'confirm_override' in request.POST:
-                # Get the existing measurement and update it
                 date_str = request.session.get('pending_measurement', {}).get('date')
                 if date_str:
                     date = datetime.strptime(date_str, '%Y-%m-%d').date()
                     measurement = Measurement.objects.get(user=request.user, date=date)
+                    form_fields = ['weight', 'waist', 'hips', 'chest', 'thigh', 'calf', 'forearm']
                     
-                    # Update with form data
-                    measurement.weight = form.cleaned_data['weight']
-                    measurement.waist = form.cleaned_data['waist']
-                    measurement.hips = form.cleaned_data['hips']
-                    measurement.chest = form.cleaned_data['chest']
-                    measurement.thigh = form.cleaned_data['thigh']
-                    measurement.calf = form.cleaned_data['calf']
-                    measurement.forearm = form.cleaned_data['forearm']
+                    for field in form_fields:
+                        setattr(measurement, field, form.cleaned_data[field])
                     measurement.save()
                     
-                    # Clear session data
                     request.session.pop('pending_measurement', None)
-                    
                     messages.success(request, _('Measurement updated successfully.'))
                     return redirect('measurement_list')
             else:
-                # Save new measurement
                 measurement = form.save(commit=False)
                 measurement.user = request.user
                 measurement.save()

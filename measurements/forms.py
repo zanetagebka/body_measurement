@@ -8,11 +8,7 @@ from .models import Measurement
 class MeasurementForm(forms.ModelForm):
     date = forms.DateField(
         widget=forms.DateInput(
-            attrs={
-                'type': 'date',
-                'class': 'form-control',
-                'required': True
-            },
+            attrs={'type': 'date', 'class': 'form-control', 'required': True},
             format='%Y-%m-%d'
         )
     )
@@ -20,14 +16,16 @@ class MeasurementForm(forms.ModelForm):
     class Meta:
         model = Measurement
         fields = ['date', 'weight', 'waist', 'hips', 'chest', 'thigh', 'calf', 'forearm']
+        
+        number_input_attrs = {'class': 'form-control', 'step': '0.1'}
         widgets = {
-            'weight': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),
-            'waist': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),
-            'hips': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),
-            'chest': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),
-            'thigh': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),
-            'calf': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),
-            'forearm': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),
+            'weight': forms.NumberInput(attrs=number_input_attrs),
+            'waist': forms.NumberInput(attrs=number_input_attrs),
+            'hips': forms.NumberInput(attrs=number_input_attrs),
+            'chest': forms.NumberInput(attrs=number_input_attrs),
+            'thigh': forms.NumberInput(attrs=number_input_attrs),
+            'calf': forms.NumberInput(attrs=number_input_attrs),
+            'forearm': forms.NumberInput(attrs=number_input_attrs),
         }
 
 # Create a formset for handling multiple measurements
@@ -42,31 +40,35 @@ MeasurementFormSet = modelformset_factory(
 )
 
 class LoginForm(AuthenticationForm):
+    form_control_attrs = {'class': 'form-control'}
+    
     username = forms.CharField(
         label=_("Username"),
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Enter your username')})
+        widget=forms.TextInput(attrs={**form_control_attrs, 'placeholder': _('Enter your username')})
     )
     password = forms.CharField(
         label=_("Password"),
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': _('Enter your password')})
+        widget=forms.PasswordInput(attrs={**form_control_attrs, 'placeholder': _('Enter your password')})
     )
 
 class RegisterForm(UserCreationForm):
+    form_control_attrs = {'class': 'form-control'}
+    
     username = forms.CharField(
         label=_("Username"),
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Enter your username')})
+        widget=forms.TextInput(attrs={**form_control_attrs, 'placeholder': _('Enter your username')})
     )
     email = forms.EmailField(
         label=_("Email"),
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': _('Enter your email')})
+        widget=forms.EmailInput(attrs={**form_control_attrs, 'placeholder': _('Enter your email')})
     )
     password1 = forms.CharField(
         label=_("Password"),
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': _('Enter your password')})
+        widget=forms.PasswordInput(attrs={**form_control_attrs, 'placeholder': _('Enter your password')})
     )
     password2 = forms.CharField(
         label=_("Confirm Password"),
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': _('Confirm your password')})
+        widget=forms.PasswordInput(attrs={**form_control_attrs, 'placeholder': _('Confirm your password')})
     )
 
     class Meta:
