@@ -123,3 +123,6 @@ msgstr "kg"
 #: templates/measurements/list.html:133 translation_strings.py:22
 msgid "cm"
 msgstr "cm"
+
+msgid "Eksportuj CSV"
+msgstr "Export CSV"

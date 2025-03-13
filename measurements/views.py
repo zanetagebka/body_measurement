@@ -2,8 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils import translation
+from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.urls import reverse
+from django.http import HttpResponse
+import csv
+from datetime import datetime
 from .forms import MeasurementForm, LoginForm, RegisterForm
 from .models import Measurement
 
@@ -80,4 +84,41 @@ def user_profile(request):
     return render(request, 'measurements/profile.html', {
         'user': request.user
     })
+
+@login_required
+def export_measurements_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    response['Content-Disposition'] = f'attachment; filename="measurements_{timestamp}.csv"'
+    
+    writer = csv.writer(response)
+    # Write the header row with translations
+    writer.writerow([
+        str(_('Data')),
+        str(_('Waga')),
+        str(_('Talia')),
+        str(_('Biodra')),
+        str(_('Klatka piersiowa')),
+        str(_('Udo')),
+        str(_('Łydka')),
+        str(_('Przedramię'))
+    ])
+    
+    # Get user's measurements ordered by date
+    measurements = Measurement.objects.filter(user=request.user).order_by('date')
+    
+    # Write the data rows
+    for measurement in measurements:
+        writer.writerow([
+            measurement.date,
+            measurement.weight if measurement.weight is not None else '',
+            measurement.waist if measurement.waist is not None else '',
+            measurement.hips if measurement.hips is not None else '',
+            measurement.chest if measurement.chest is not None else '',
+            measurement.thigh if measurement.thigh is not None else '',
+            measurement.calf if measurement.calf is not None else '',
+            measurement.forearm if measurement.forearm is not None else ''
+        ])
+    
+    return response
 
