@@ -1,0 +1,112 @@
+{% extends 'measurements/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{% trans "Confirm Measurement Override" %}</h2>
+    <p class="text-muted">{% trans "A measurement already exists for this date. Please choose which measurement to keep." %}</p>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{% trans "Existing Measurement" %}</h5>
+                    <small class="text-muted">{{ existing.date }}</small>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th>{% trans "Weight" %}</th>
+                            <td>{{ existing.weight }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Waist" %}</th>
+                            <td>{{ existing.waist }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Hips" %}</th>
+                            <td>{{ existing.hips }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Chest" %}</th>
+                            <td>{{ existing.chest }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Thigh" %}</th>
+                            <td>{{ existing.thigh }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Calf" %}</th>
+                            <td>{{ existing.calf }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Forearm" %}</th>
+                            <td>{{ existing.forearm }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{% trans "New Measurement" %}</h5>
+                    <small class="text-muted">{{ new.date }}</small>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th>{% trans "Weight" %}</th>
+                            <td>{{ new.weight }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Waist" %}</th>
+                            <td>{{ new.waist }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Hips" %}</th>
+                            <td>{{ new.hips }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Chest" %}</th>
+                            <td>{{ new.chest }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Thigh" %}</th>
+                            <td>{{ new.thigh }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Calf" %}</th>
+                            <td>{{ new.calf }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Forearm" %}</th>
+                            <td>{{ new.forearm }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+        <form method="post" action="{% url 'measurement_list' %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary">
+                {% trans "Keep Existing" %}
+            </button>
+        </form>
+
+        <form method="post" action="{% url 'measurement_add' %}" class="d-inline">
+            {% csrf_token %}
+            <input type="hidden" name="confirm_override" value="1">
+            {% for field, value in new.items %}
+                <input type="hidden" name="{{ field }}" value="{{ value }}">
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">
+                {% trans "Use New Measurement" %}
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %} 

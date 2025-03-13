@@ -12,6 +12,7 @@ from datetime import datetime
 from io import TextIOWrapper
 from .forms import MeasurementForm, LoginForm, RegisterForm, MeasurementFormSet
 from .models import Measurement
+from django.contrib import messages
 
 @login_required
 def measurement_list(request):
@@ -26,10 +27,71 @@ def measurement_add(request):
     if request.method == 'POST':
         form = MeasurementForm(request.POST)
         if form.is_valid():
-            measurement = form.save(commit=False)
-            measurement.user = request.user
-            measurement.save()
-            return redirect('measurement_list')
+            date = form.cleaned_data['date']
+            
+            # Check for existing measurement on this date
+            existing_measurement = Measurement.objects.filter(
+                user=request.user,
+                date=date
+            ).first()
+            
+            if existing_measurement and 'confirm_override' not in request.POST:
+                # Store form data in session
+                request.session['pending_measurement'] = {
+                    'date': date.strftime('%Y-%m-%d'),
+                    'weight': str(form.cleaned_data['weight']) if form.cleaned_data['weight'] else '',
+                    'waist': str(form.cleaned_data['waist']) if form.cleaned_data['waist'] else '',
+                    'hips': str(form.cleaned_data['hips']) if form.cleaned_data['hips'] else '',
+                    'chest': str(form.cleaned_data['chest']) if form.cleaned_data['chest'] else '',
+                    'thigh': str(form.cleaned_data['thigh']) if form.cleaned_data['thigh'] else '',
+                    'calf': str(form.cleaned_data['calf']) if form.cleaned_data['calf'] else '',
+                    'forearm': str(form.cleaned_data['forearm']) if form.cleaned_data['forearm'] else '',
+                }
+                
+                # Show confirmation page
+                return render(request, 'measurements/confirm_override.html', {
+                    'existing': {
+                        'date': existing_measurement.date,
+                        'weight': str(existing_measurement.weight) if existing_measurement.weight else '',
+                        'waist': str(existing_measurement.waist) if existing_measurement.waist else '',
+                        'hips': str(existing_measurement.hips) if existing_measurement.hips else '',
+                        'chest': str(existing_measurement.chest) if existing_measurement.chest else '',
+                        'thigh': str(existing_measurement.thigh) if existing_measurement.thigh else '',
+                        'calf': str(existing_measurement.calf) if existing_measurement.calf else '',
+                        'forearm': str(existing_measurement.forearm) if existing_measurement.forearm else '',
+                    },
+                    'new': request.session['pending_measurement']
+                })
+            
+            if 'confirm_override' in request.POST:
+                # Get the existing measurement and update it
+                date_str = request.session.get('pending_measurement', {}).get('date')
+                if date_str:
+                    date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                    measurement = Measurement.objects.get(user=request.user, date=date)
+                    
+                    # Update with form data
+                    measurement.weight = form.cleaned_data['weight']
+                    measurement.waist = form.cleaned_data['waist']
+                    measurement.hips = form.cleaned_data['hips']
+                    measurement.chest = form.cleaned_data['chest']
+                    measurement.thigh = form.cleaned_data['thigh']
+                    measurement.calf = form.cleaned_data['calf']
+                    measurement.forearm = form.cleaned_data['forearm']
+                    measurement.save()
+                    
+                    # Clear session data
+                    request.session.pop('pending_measurement', None)
+                    
+                    messages.success(request, _('Measurement updated successfully.'))
+                    return redirect('measurement_list')
+            else:
+                # Save new measurement
+                measurement = form.save(commit=False)
+                measurement.user = request.user
+                measurement.save()
+                messages.success(request, _('Measurement added successfully.'))
+                return redirect('measurement_list')
     else:
         form = MeasurementForm()
     return render(request, 'measurements/add.html', {'form': form})
@@ -145,11 +207,9 @@ def import_measurements(request):
                         'error': _('The CSV file is empty or has invalid format.')
                     })
                 
-                print("CSV Headers:", reader.fieldnames)  # Debug print
-                print("First row:", csv_data[0])  # Debug print
-                
                 # Create initial data for the formset
                 initial_data = []
+                duplicate_dates = {}
                 
                 for row in csv_data:
                     date_str = row.get('Data', '').strip()
@@ -160,9 +220,15 @@ def import_measurements(request):
                         # Parse the date from the CSV
                         date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
                         
+                        # Check for existing measurement on this date
+                        existing_measurement = Measurement.objects.filter(
+                            user=request.user,
+                            date=date_obj
+                        ).first()
+                        
                         # Create measurement data dictionary
                         measurement_data = {
-                            'date': date_obj,
+                            'date': date_str,
                             'weight': row.get('Waga', '').strip(),
                             'waist': row.get('Talia', '').strip(),
                             'hips': row.get('Biodra', '').strip(),
@@ -171,11 +237,38 @@ def import_measurements(request):
                             'calf': row.get('Łydka', '').strip(),
                             'forearm': row.get('Przedramię', '').strip()
                         }
-                        initial_data.append(measurement_data)
-                        print("Adding measurement data:", measurement_data)  # Debug print
+                        
+                        if existing_measurement:
+                            # Store both measurements for comparison
+                            duplicate_dates[date_str] = {
+                                'existing': {
+                                    'date': date_str,
+                                    'weight': str(existing_measurement.weight) if existing_measurement.weight else '',
+                                    'waist': str(existing_measurement.waist) if existing_measurement.waist else '',
+                                    'hips': str(existing_measurement.hips) if existing_measurement.hips else '',
+                                    'chest': str(existing_measurement.chest) if existing_measurement.chest else '',
+                                    'thigh': str(existing_measurement.thigh) if existing_measurement.thigh else '',
+                                    'calf': str(existing_measurement.calf) if existing_measurement.calf else '',
+                                    'forearm': str(existing_measurement.forearm) if existing_measurement.forearm else '',
+                                },
+                                'new': measurement_data
+                            }
+                        else:
+                            measurement_data['date'] = date_obj
+                            initial_data.append(measurement_data)
+                            
                     except ValueError as e:
                         print(f"Invalid date format in CSV: {date_str} - {str(e)}")
                         continue
+                
+                if duplicate_dates:
+                    # Store initial data in session
+                    request.session['pending_import_data'] = initial_data
+                    request.session['duplicate_dates'] = duplicate_dates
+                    # If there are duplicates, show the comparison page
+                    return render(request, 'measurements/resolve_duplicates.html', {
+                        'duplicate_dates': duplicate_dates
+                    })
                 
                 if not initial_data:
                     return render(request, 'measurements/import.html', {
@@ -185,7 +278,6 @@ def import_measurements(request):
                 # Create formset with initial data
                 FormSet = modelformset_factory(Measurement, form=MeasurementForm, extra=len(initial_data))
                 formset = FormSet(queryset=Measurement.objects.none(), initial=initial_data)
-                print("Formset initial data count:", len(formset.forms))  # Debug print
                 return render(request, 'measurements/import.html', {'formset': formset})
                 
             except Exception as e:
@@ -193,6 +285,85 @@ def import_measurements(request):
                 return render(request, 'measurements/import.html', {
                     'error': _('Error processing CSV file: ') + str(e)
                 })
+        elif 'resolve_duplicates' in request.POST:
+            try:
+                # Handle duplicate resolution
+                updated_count = 0
+                skipped_count = 0
+                
+                # Get stored duplicate dates from session
+                duplicate_dates = request.session.get('duplicate_dates', {})
+                
+                # Process measurements with duplicates
+                for date_str, measurements in duplicate_dates.items():
+                    try:
+                        choice = request.POST.get(f'choice_{date_str}')
+                        if not choice:
+                            continue
+                            
+                        date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+                        measurement = Measurement.objects.get(user=request.user, date=date_obj)
+                        
+                        if choice == 'update':
+                            # Update existing measurement with new data
+                            new_data = measurements['new']
+                            fields = ['weight', 'waist', 'hips', 'chest', 'thigh', 'calf', 'forearm']
+                            
+                            for field in fields:
+                                value = new_data.get(field, '').strip()
+                                if value:
+                                    try:
+                                        setattr(measurement, field, float(value))
+                                    except (ValueError, TypeError):
+                                        continue
+                            
+                            measurement.save()
+                            updated_count += 1
+                        else:
+                            skipped_count += 1
+                    except (Measurement.DoesNotExist, ValueError) as e:
+                        print(f"Error processing measurement for date {date_str}: {str(e)}")
+                        continue
+                
+                # Process any remaining non-duplicate records from the session
+                pending_data = request.session.get('pending_import_data', [])
+                for data in pending_data:
+                    try:
+                        measurement = Measurement(user=request.user)
+                        date_str = data.get('date')
+                        if isinstance(date_str, str):
+                            measurement.date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                        else:
+                            measurement.date = date_str
+                            
+                        fields = ['weight', 'waist', 'hips', 'chest', 'thigh', 'calf', 'forearm']
+                        for field in fields:
+                            value = data.get(field, '').strip()
+                            if value:
+                                try:
+                                    setattr(measurement, field, float(value))
+                                except (ValueError, TypeError):
+                                    continue
+                        
+                        measurement.save()
+                        updated_count += 1
+                    except Exception as e:
+                        print(f"Error saving measurement: {str(e)}")
+                        continue
+                
+                # Clear session data
+                request.session.pop('duplicate_dates', None)
+                request.session.pop('pending_import_data', None)
+                
+                messages.success(request, _(
+                    f'Successfully imported {updated_count} measurements. '
+                    f'{skipped_count} existing measurements were kept unchanged.'
+                ))
+                return redirect('measurement_list')
+            except Exception as e:
+                print("Error during duplicate resolution:", str(e))
+                messages.error(request, _('Error processing measurements. Please try again.'))
+                return redirect('measurement_list')
         else:
             formset = MeasurementFormSet(request.POST, queryset=Measurement.objects.none())
             if formset.is_valid():
@@ -204,7 +375,7 @@ def import_measurements(request):
                     instance.save()
                     saved_count += 1
                 
-                message = _(f'Successfully imported {saved_count} measurements.')
+                messages.success(request, _(f'Successfully imported {saved_count} measurements.'))
                 return redirect('measurement_list')
             else:
                 print("Formset errors:", formset.errors)
