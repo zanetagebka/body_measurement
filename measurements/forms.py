@@ -2,7 +2,6 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
-from django.forms import modelformset_factory
 from .models import Measurement
 
 class MeasurementForm(forms.ModelForm):
@@ -28,16 +27,7 @@ class MeasurementForm(forms.ModelForm):
             'forearm': forms.NumberInput(attrs=number_input_attrs),
         }
 
-# Create a formset for handling multiple measurements
-MeasurementFormSet = modelformset_factory(
-    Measurement,
-    form=MeasurementForm,
-    extra=0,
-    min_num=1,
-    validate_min=True,
-    can_delete=False,
-    fields=['date', 'weight', 'waist', 'hips', 'chest', 'thigh', 'calf', 'forearm']
-)
+
 
 class LoginForm(AuthenticationForm):
     form_control_attrs = {'class': 'form-control'}

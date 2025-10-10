@@ -124,5 +124,3 @@ msgstr "kg"
 msgid "cm"
 msgstr "cm"
 
-msgid "Eksportuj CSV"
-msgstr "Export CSV"

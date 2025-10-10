@@ -6,7 +6,6 @@ TITLE_ADD_MEASUREMENT = _("Dodaj nowy pomiar")
 NO_MEASUREMENTS = _("Brak zapisanych pomiarów")
 REQUIRED_FIELDS = _("Pola oznaczone * są wymagane")
 CHART_TITLE = _("Wykres pomiarów")
-EXPORT_CSV = _("Eksportuj CSV")
 
 # Measurement fields
 FIELD_DATE = _("Data")

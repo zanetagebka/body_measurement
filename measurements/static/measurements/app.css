@@ -1,0 +1,91 @@
+/* Minimal, modern theme for Body Measurements */
+
+:root {
+  --bm-radius: 12px;
+  --bm-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  --bm-shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.bm-content {
+  flex: 1;
+  padding: 32px 0;
+}
+
+/* Navbar */
+.navbar {
+  box-shadow: var(--bm-shadow-soft);
+}
+
+.navbar-brand {
+  font-weight: 600;
+}
+
+/* Cards and containers */
+.bm-card,
+.card {
+  border-radius: var(--bm-radius);
+  box-shadow: var(--bm-shadow);
+  border: 0;
+}
+
+.bm-surface {
+  background: var(--bs-body-bg);
+  border-radius: var(--bm-radius);
+  box-shadow: var(--bm-shadow);
+}
+
+/* Chart container */
+.chart-container {
+  background: var(--bs-body-bg);
+  border-radius: var(--bm-radius);
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: var(--bm-shadow);
+}
+
+/* Table container */
+.table-container {
+  background: var(--bs-body-bg);
+  border-radius: var(--bm-radius);
+  overflow: hidden;
+  box-shadow: var(--bm-shadow);
+}
+
+/* Messages */
+.bm-messages {
+  position: sticky;
+  top: 12px;
+  z-index: 1030;
+}
+
+.bm-message {
+  border-radius: 10px;
+  box-shadow: var(--bm-shadow-soft);
+}
+
+/* Utilities */
+.bm-muted {
+  color: var(--bs-secondary-color);
+}
+
+/* Dark mode tweaks (Bootstrap 5.3 data-bs-theme="dark") */
+[data-bs-theme="dark"] .navbar {
+  box-shadow: none;
+}
+
+[data-bs-theme="dark"] .bm-card,
+[data-bs-theme="dark"] .chart-container,
+[data-bs-theme="dark"] .table-container {
+  box-shadow: none;
+}

@@ -22,15 +22,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') != 'False'
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-h8!kxdakp^*7uvezvlx531@3@0(wm@7@dgmc((a7#olnreqkix')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    if DEBUG:
+        # Safe default for local dev only
+        SECRET_KEY = 'django-insecure-dev-key-change-me'
+    else:
+        raise ValueError('DJANGO_SECRET_KEY must be set when DEBUG=False')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
-
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.pythonanywhere.com']
+# Hosts
+_default_hosts = 'localhost,127.0.0.1,.pythonanywhere.com'
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', _default_hosts).split(',') if h.strip()]
 
 
 # Application definition
@@ -134,8 +139,8 @@ LOCALE_PATHS = [
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = '/static/'  # Added leading slash
-STATIC_ROOT = str(BASE_DIR / 'staticfiles')  # Convert to string for compatibility
+STATIC_URL = '/static/'
+STATIC_ROOT = str(BASE_DIR / 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -149,17 +154,20 @@ LOGOUT_REDIRECT_URL = 'login'
 
 # Security Settings
 if not DEBUG:
-    # Comment out SSL settings for now as PythonAnywhere free tier doesn't support SSL
-    # SECURE_SSL_REDIRECT = True
-    # SESSION_COOKIE_SECURE = True
-    # CSRF_COOKIE_SECURE = True
+    # Basic secure defaults for production
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_REFERRER_POLICY = 'same-origin'
 
 # Email Configuration
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')

@@ -1,157 +1,146 @@
-{% load i18n %}
+{% load i18n static %}
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE }}">
+<html lang="{{ LANGUAGE_CODE }}" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %} - Body Measurements</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'measurements/app.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .content {
-            flex: 1;
-            padding: 20px 0;
-        }
-        .navbar-brand {
-            font-weight: 600;
-        }
-        .nav-link.active {
-            font-weight: 500;
-        }
-        .navbar-nav {
-            align-items: center;
-        }
-        .navbar-collapse {
-            background-color: var(--bs-primary);
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-top: 0.5rem;
-            position: absolute;
-            right: 0;
-            top: 100%;
-            width: 250px;
-            z-index: 1000;
-        }
-        .navbar-collapse.show {
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-        }
-        .container {
-            position: relative;
-        }
-        .user-greeting {
-            color: white;
-            text-decoration: none;
-            margin-right: 1rem;
-        }
-        .user-greeting:hover {
-            color: rgba(255, 255, 255, 0.8);
-        }
-        .navbar-right {
-            display: flex;
-            align-items: center;
-            margin-left: auto;
-        }
-        .language-switch {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 0;
-        }
-    </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-primary">
+    <nav class="navbar bg-body border-bottom mb-4">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">
-                <i class="bi bi-clipboard2-pulse me-2"></i>Body Measurements
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+                <i class="bi bi-clipboard2-pulse me-2"></i>
+                <span>Body Measurements</span>
             </a>
-            <div class="navbar-right">
+
+            <div class="ms-auto d-flex align-items-center gap-2">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'user_profile' %}" class="user-greeting">
-                        {% trans "Hello" %}, {{ user.username|capfirst }}
+                    {% get_current_language as CURRENT_LANGUAGE %}
+                    <a href="{% url 'user_profile' %}" class="nav-link">
+                        {% if CURRENT_LANGUAGE == 'pl' %}Witaj{% else %}{% trans "Hello" %}{% endif %}, {{ user.username|capfirst }}
                     </a>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menu">
+                            <i class="bi bi-list"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li class="dropdown-header">Menu</li>
+                            <li>
+                                <button class="dropdown-item d-flex align-items-center gap-2" type="button" id="themeToggleMenu">
+                                    <i class="bi bi-moon-stars" id="themeToggleIcon"></i>
+                                    <span id="themeToggleText">{% trans "Dark mode" %}</span>
+                                </button>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                {% if CURRENT_LANGUAGE == 'en' %}
+                                    <a class="dropdown-item" href="{% url 'switch_language' %}?lang=pl">
+                                        <i class="bi bi-globe me-2"></i>English → Polski
+                                    </a>
+                                {% else %}
+                                    <a class="dropdown-item" href="{% url 'switch_language' %}?lang=en">
+                                        <i class="bi bi-globe me-2"></i>Polski → English
+                                    </a>
+                                {% endif %}
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'user_profile' %}"><i class="bi bi-person me-2"></i>{% trans "Profile" %}</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>{% trans "Logout" %}</a></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menu">
+                            <i class="bi bi-list"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <button class="dropdown-item d-flex align-items-center gap-2" type="button" id="themeToggleMenu">
+                                    <i class="bi bi-moon-stars" id="themeToggleIcon"></i>
+                                    <span id="themeToggleText">{% trans "Dark mode" %}</span>
+                                </button>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right me-2"></i>{% trans "Login" %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'register' %}"><i class="bi bi-person-plus me-2"></i>{% trans "Register" %}</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            {% get_current_language as CURRENT_LANGUAGE %}
+                            <li>
+                                {% if CURRENT_LANGUAGE == 'en' %}
+                                    <a class="dropdown-item" href="{% url 'switch_language' %}?lang=pl">
+                                        <i class="bi bi-globe me-2"></i>English → Polski
+                                    </a>
+                                {% else %}
+                                    <a class="dropdown-item" href="{% url 'switch_language' %}?lang=en">
+                                        <i class="bi bi-globe me-2"></i>Polski → English
+                                    </a>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
                 {% endif %}
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link {% if request.resolver_match.url_name == 'measurement_add' %}active{% endif %}" 
-                               href="{% url 'measurement_add' %}">
-                                <i class="bi bi-plus-circle me-1"></i>{% trans "Dodaj nowy pomiar" %}
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <div class="language-switch">
-                                <i class="bi bi-globe text-light"></i>
-                                {% get_current_language as CURRENT_LANGUAGE %}
-                                {% if CURRENT_LANGUAGE == 'en' %}
-                                    <a class="nav-link" href="{% url 'switch_language' %}?lang=pl">
-                                        English → Polski
-                                    </a>
-                                {% else %}
-                                    <a class="nav-link" href="{% url 'switch_language' %}?lang=en">
-                                        Polski → English
-                                    </a>
-                                {% endif %}
-                            </div>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">
-                                <i class="bi bi-box-arrow-right me-1"></i>{% trans "Logout" %}
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" 
-                               href="{% url 'login' %}">
-                                <i class="bi bi-box-arrow-in-right me-1"></i>{% trans "Login" %}
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {% if request.resolver_match.url_name == 'register' %}active{% endif %}" 
-                               href="{% url 'register' %}">
-                                <i class="bi bi-person-plus me-1"></i>{% trans "Register" %}
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <div class="language-switch">
-                                <i class="bi bi-globe text-light"></i>
-                                {% get_current_language as CURRENT_LANGUAGE %}
-                                {% if CURRENT_LANGUAGE == 'en' %}
-                                    <a class="nav-link" href="{% url 'switch_language' %}?lang=pl">
-                                        English → Polski
-                                    </a>
-                                {% else %}
-                                    <a class="nav-link" href="{% url 'switch_language' %}?lang=en">
-                                        Polski → English
-                                    </a>
-                                {% endif %}
-                            </div>
-                        </li>
-                    {% endif %}
-                </ul>
             </div>
         </div>
     </nav>
 
-    <div class="content">
+    <div class="bm-content">
         <div class="container">
+            <div class="bm-messages">
+                {% if messages %}
+                    {% for message in messages %}
+                        {% with level=message.tags %}
+                        <div class="alert alert-{{ level|default:'info' }} bm-message alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endwith %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+
             {% block content %}{% endblock %}
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Theme toggle using Bootstrap 5.3 data-bs-theme, in dropdown menu
+        (function() {
+            const key = 'bm-theme';
+            const root = document.documentElement;
+            const saved = localStorage.getItem(key);
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const initial = saved || (prefersDark ? 'dark' : 'light');
+
+            const menuBtn = document.getElementById('themeToggleMenu');
+            const menuIcon = document.getElementById('themeToggleIcon');
+            const menuText = document.getElementById('themeToggleText');
+            const labelDark = "{% trans 'Dark mode' %}";
+            const labelLight = "{% trans 'Light mode' %}";
+
+            function applyTheme(theme) {
+                root.setAttribute('data-bs-theme', theme);
+                localStorage.setItem(key, theme);
+                if (menuIcon) menuIcon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+                if (menuText) menuText.textContent = theme === 'dark' ? labelLight : labelDark;
+            }
+
+            applyTheme(initial);
+
+            if (menuBtn) {
+                menuBtn.addEventListener('click', function() {
+                    const next = root.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+                    applyTheme(next);
+                });
+            }
+        })();
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
-</html> 
+</html>
