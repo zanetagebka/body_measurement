@@ -37,6 +37,10 @@ if not SECRET_KEY:
 _default_hosts = 'localhost,127.0.0.1,.pythonanywhere.com'
 ALLOWED_HOSTS = [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', _default_hosts).split(',') if h.strip()]
 
+# CSRF trusted origins (required when DEBUG=False and using a custom host)
+_default_csrf = 'https://*.pythonanywhere.com'
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', _default_csrf).split(',') if o.strip()]
+
 
 # Application definition
 
@@ -165,9 +169,13 @@ if not DEBUG:
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
     EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
     EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+    if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
+        EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+        EMAIL_HOST = 'smtp.gmail.com'
+        EMAIL_PORT = 587
+        EMAIL_USE_TLS = True
+    else:
+        # Fail-safe: avoid runtime errors if email is not configured in production
+        EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
