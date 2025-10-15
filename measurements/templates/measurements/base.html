@@ -20,6 +20,10 @@
             </a>
 
             <div class="ms-auto d-flex align-items-center gap-2">
+            <a href="{% url 'measurement_add' %}" class="btn btn-outline-secondary btn-sm" type="button" aria-label="Add Measurement">
+                <i class="bi bi-plus-lg"></i>
+                {% translate "Add Measurement" %}
+            </a>
                 {% if user.is_authenticated %}
                     {% get_current_language as CURRENT_LANGUAGE %}
                     <a href="{% url 'user_profile' %}" class="nav-link">

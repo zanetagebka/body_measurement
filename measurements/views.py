@@ -74,6 +74,20 @@ def measurement_add(request):
     return render(request, 'measurements/add.html', {'form': form})
 
 @login_required
+def measurement_edit(request, pk):
+    measurement = get_object_or_404(Measurement, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = MeasurementForm(request.POST, instance=measurement)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _('Measurement updated successfully.'))
+            return redirect('measurement_list')
+    else:
+        form = MeasurementForm(instance=measurement)
+    return render(request, 'measurements/edit.html', {'form': form})
+
+
+@login_required
 def measurement_delete(request, pk):
     measurement = get_object_or_404(Measurement, pk=pk, user=request.user)
     if request.method == 'POST':
