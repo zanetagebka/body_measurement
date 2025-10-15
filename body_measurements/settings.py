@@ -14,18 +14,19 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env file at project root (works locally and on PA)
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') != 'False'
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+# Support both DJANGO_SECRET_KEY and SECRET_KEY env var names
+SECRET_KEY = (os.environ.get('DJANGO_SECRET_KEY') or os.environ.get('SECRET_KEY') or '').strip()
 if not SECRET_KEY:
     if DEBUG:
         # Safe default for local dev only
